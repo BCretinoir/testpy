@@ -14,26 +14,28 @@ def drawSnake():
         pygame.draw.rect(wind, snakeColor, snake_rect)
 
 def updateSnake(direction):
-   global food
-   dirX, dirY = direction    
-   head = snake[0].copy()
-   head[0] = (head[0] + dirX) % grid_x
-   head[1] = (head[1] + dirY) % grid_y
+    global food
+    global running
+    dirX, dirY = direction    
+    head = snake[0].copy()
+    head[0] = (head[0] + dirX) % grid_x
+    head[1] = (head[1] + dirY) % grid_y
 
-   if head in snake[1:]:
-       return False
-   elif head == food:
-       while True:
-           newfood = [
-               random.randint(0, grid_x - 1),
-               random.randint(0, grid_y - 1)
-           ]
-           if newfood not in snake:
-               break
-       food = newfood
-       snake.pop()
-       snake.insert(0, head)
-       return True
+    if head in snake[1:]:
+        running = False
+    elif head == food:
+        while True:
+            newfood = [
+                random.randint(0, grid_x - 1),
+                random.randint(0, grid_y - 1)
+            ]
+            if newfood not in snake:
+                break
+        food = newfood
+        snake.insert(0, head)
+    else:
+        snake.pop()
+        snake.insert(0, head)
 
 # Ouvrir la fenêtre avec Pygame
 pygame.init()
@@ -62,14 +64,12 @@ snake = [
 
 food = [grid_x // 2, grid_y // 2]
 
-
-
 # Boucle de jeu 
 running = True
 direction = [1, 0]
 opposite_direction = [-1, 0]
 while running:
-    pygame.time.Clock().tick(1)
+    pygame.time.Clock().tick(15)
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
@@ -77,34 +77,24 @@ while running:
             if event.key == pygame.K_ESCAPE:
                 running = False
 
-            if event.key == 100  or event.key == pygame.K_RIGHT and not direction == [-1, 0]:  # fleche droite ou d
+            if event.key == pygame.K_RIGHT and not direction == [-1, 0]:  # fleche droite
                 direction = [1, 0]
-            if event.key == 97 or event.key == pygame.K_LEFT and not direction == [1, 0]:  # fleche gauche ou q
+            elif event.key == pygame.K_LEFT and not direction == [1, 0]:  # fleche gauche
                 direction = [-1, 0]
-            if event.key == 119 or event.key == pygame.K_UP and not direction == [0, 1]:  # fleche haut ou z
+            elif event.key == pygame.K_UP and not direction == [0, 1]:  # fleche haut
                 direction = [0, -1]
-            if event.key == 115 or event.key == pygame.K_DOWN and not direction == [0, -1]:  # fleche bas ou s
+            elif event.key == pygame.K_DOWN and not direction == [0, -1]:  # fleche bas
                 direction = [0, 1] 
 
     # Mise à jour de la position du serpent
-    if not updateSnake(direction):
-        print("Game over")
-        running = False
+    updateSnake(direction)
 
     # Dessiner
     wind.fill(backgroundColor)
     drawFood()
     drawSnake()
 
-pygame.display.update()
+    pygame.display.update()
+
 pygame.quit()
 sys.exit()
-
-      
-
-                
-
-
- 
-
-
